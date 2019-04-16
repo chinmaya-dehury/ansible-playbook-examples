@@ -1,0 +1,14 @@
+# this playbook allows us to create multiple files. All the file names follows a pattern
+# we will be using with_sequence feature to create those files.
+
+--- 
+- hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - name: generate 10 empty files
+      file:
+        path: "/tmp/playing_opera/loopdemo/file{{ item }}"
+        state: touch
+      with_sequence: start=1 end=10
+…
