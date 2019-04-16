@@ -1,0 +1,17 @@
+# Here is the demo of loop_control feature
+# multiple empty files would be created at a specific time interval. Here in each 10sec one empty file would be created.
+# Total 20 files will be created
+
+--- 
+- hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - name: create 20 empty file in each 10 sec
+      file:
+        path: "/tmp/playing_opera/loopdemo/file{{ item }}"
+        state: touch
+      with_sequence: start=1 end=20
+      loop_control:
+        pause: 10
+...
