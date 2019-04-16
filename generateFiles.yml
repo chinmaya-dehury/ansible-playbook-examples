@@ -1,0 +1,19 @@
+--- 
+- hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - name: create the location/directory
+      file:
+        path: /tmp/playing_opera/loopdemo
+        state: directory
+
+    - name: generate empty file from a list of file names
+      file:
+        path: "/tmp/playing_opera/loopdemo/{{ item }}"
+        state: touch
+      with_items:
+        - fruitsList
+        - censusReport
+        - countryList
+…
