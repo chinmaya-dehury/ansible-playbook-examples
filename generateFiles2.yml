@@ -1,0 +1,19 @@
+# this playbook will create multiple empty files.
+# The file names are given in a list format
+
+--- 
+- hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - name: create the location/directory
+      file:
+        path: /tmp/playing_opera/loopdemo
+        state: directory
+
+    - name: generate empty file from a list of file names
+      file:
+        path: "/tmp/playing_opera/loopdemo/{{ item }}"
+        state: touch
+      loop: [ fruitsList, censusReport, countryList ]
+…
