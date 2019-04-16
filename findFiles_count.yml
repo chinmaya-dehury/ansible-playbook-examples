@@ -1,0 +1,16 @@
+# This playbook will count the number of files found with ansible find task
+# we will search for the files that follows specific pattern and then will count the number of files found
+
+--- 
+- hosts: localhost
+  gather_facts: no
+  become: no
+  tasks:
+    - name: find the files
+      find:
+        path: "/tmp/playing_opera/loopdemo"
+        patterns: "file*"
+      register: output
+    - debug:
+        var: output.matched
+...
