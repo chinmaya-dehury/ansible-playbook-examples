@@ -1,3 +1,6 @@
+# this playbook will create multiple empty files.
+# The file names are given in a list format
+
 --- 
 - hosts: localhost
   gather_facts: no
