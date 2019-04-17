@@ -4,11 +4,9 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  vars:
-    my_path: /tmp/playing_opera/op5
   tasks:
 
-    - name: Pretend to create instances. Showing only the msgs.
+    - name: task1 - Create files in every 10 seconds
       command: "/bin/bash create.sh {{ item }} 10"
       with_items: 
         - 1
@@ -16,11 +14,11 @@
         - 3
         - 4
         - 5
-      register: output
+      register: output_crt
       async: 200  # Maximum runtime in seconds. Adjust as needed.
       poll: 0  # Fire and continue (never poll)
 
-    - name: Pretend to create instances. Showing only the msgs.
+    - name: Task2 - Remove files in every 15 seconds
       command: "/bin/bash remove.sh {{ item }} 15"
       with_items: 
         - 1
@@ -34,11 +32,11 @@
 
     - name: Wait for creation to finish
       async_status: jid={{ item.ansible_job_id }}
-      register: _jobs
-      until: _jobs.finished
+      register: _jobs_crt
+      until: _jobs_crt.finished
       delay: 5  # Check every 5 seconds. Adjust as you like.
       retries: 10  # Retry up to 10 times. Adjust as needed.
-      with_items: "{{ output.results }}"
+      with_items: "{{ output_crt.results }}"
 
     - name: Wait for removal to finish
       async_status: jid={{ item.ansible_job_id }}
