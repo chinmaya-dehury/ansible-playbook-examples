@@ -1,5 +1,7 @@
+vars: 
+        count: 6
 - block:
         - debug: 
-            msg: "Found more than than 5 files"
-        - shell: ls /tmp/playing_opera/ope_ex4/loopdemo
+            msg: "This is a demonstration message"
+        - shell: ls /tmp
   when: count > 5
