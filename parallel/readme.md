@@ -11,7 +11,7 @@ Arguments description:
 
 Make sure that create and remove are executable files. If not change it with following command  
   > chmod +x create.sh  
-  > chmoe +x remove.sh  
+  > chmod +x remove.sh  
 
 Ansible command:  
   > ansible-playbook run_in_parallel.yml
