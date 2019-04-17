@@ -1,0 +1,5 @@
+- block:
+        - debug: 
+            msg: "Found more than than 5 files"
+        - shell: ls /tmp/playing_opera/ope_ex4/loopdemo
+  when: count > 5
