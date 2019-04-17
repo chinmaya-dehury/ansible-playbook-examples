@@ -1,0 +1,50 @@
+---
+
+- name: Run tasks in parallel
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    my_path: /tmp/playing_opera/op5
+  tasks:
+
+    - name: Pretend to create instances. Showing only the msgs.
+      command: "/bin/bash create.sh {{ item }} 10"
+      with_items: 
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      register: output
+      async: 200  # Maximum runtime in seconds. Adjust as needed.
+      poll: 0  # Fire and continue (never poll)
+
+    - name: Pretend to create instances. Showing only the msgs.
+      command: "/bin/bash remove.sh {{ item }} 15"
+      with_items: 
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      register: output_rem
+      async: 200  # Maximum runtime in seconds. Adjust as needed.
+      poll: 0  # Fire and continue (never poll)
+
+    - name: Wait for creation to finish
+      async_status: jid={{ item.ansible_job_id }}
+      register: _jobs
+      until: _jobs.finished
+      delay: 5  # Check every 5 seconds. Adjust as you like.
+      retries: 10  # Retry up to 10 times. Adjust as needed.
+      with_items: "{{ output.results }}"
+
+    - name: Wait for removal to finish
+      async_status: jid={{ item.ansible_job_id }}
+      register: _jobs_rem
+      until: _jobs_rem.finished
+      delay: 5  # Check every 5 seconds. Adjust as you like.
+      retries: 10  # Retry up to 10 times. Adjust as needed.
+      with_items: "{{ output_rem.results }}"
+...
