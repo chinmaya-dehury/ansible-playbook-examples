@@ -1,11 +1,11 @@
+vars: 
+      count: 6
 - include: generate.yml
-      when: output.matched > 5
+      when: count > 5
 
 #-----------
 # generate.yml
 #-----------
 - debug: 
-    msg: "Found more than than 5 files"
-- shell: ls /tmp/playing_opera/ope_ex4/loopdemo
-- debug:
-    msg: "This is a message from generate.yml"
+    msg: "generate.yml: This is a demonstration message"
+- shell: ls /tmp
