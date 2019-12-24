@@ -1,0 +1,138 @@
+---
+- hosts: localhost
+  become: no
+  gather_facts: no
+
+  environment:
+    OS_CLIENT_CONFIG_FILE: ./cloud.yaml"
+
+  vars:    
+    # below is centos image
+    image: 13a94b11-98ee-43a4-ad29-00ae97e8f790
+    flavor: 6b254b9e-db1c-40de-994c-07d69dd732a6
+    network: provider_64_net
+    key_name: rem-VM2
+    user: centos
+
+    template_file: "../files/{{template_name}}.xml"
+
+
+  tasks:
+    - name: Create VM
+      os_server:
+        state: present
+        name: "{{ vm_name }}"
+        image: "{{ image }}"
+        key_name: "{{ key_name }}"
+        flavor: "{{ flavor }}"
+        network: "{{ network }}"
+        security_groups: default
+        boot_from_volume: True
+        volume_size: 20
+        timeout: 200
+      register: server_info
+
+    - name: Set attributes of VMs
+      set_stats:
+        data:
+          private_address: "{{ ip_add }}"
+          public_address: "{{ ip_add }}"
+          
+
+    - name: Create temporary invetory for ssh wait
+      add_host:
+        name: "{{ vm_name }}"
+        groups: "{{ vm_name }}"
+        ansible_host: "{{ ip_add }}"
+        ansible_user: "{{ user }}"
+        ansible_ssh_common_args: >
+          -o BatchMode=yes
+          -o UserKnownHostsFile=/dev/null
+          -o StrictHostKeyChecking=no
+#          -o IdentitiesOnly=yes
+
+
+- hosts: "{{ vm_name }}"
+  become: yes
+  
+  environment:
+    OS_CLIENT_CONFIG_FILE: ./cloud.yaml"
+
+  vars:
+    template_file: "../files/{{ template_name }}.xml"
+    # template_name: vm_one_rcv_snd_data
+    tarball_version: 1.10.0
+    query: "resources[?name=='{{template_name}}' && starts_with(identifier, '/templates/')].identifier"
+
+  tasks:
+    - name: Wait for ssh to wake up
+      wait_for_connection:
+          timeout: 120
+    
+    - name: Install Java 8
+      package:
+        name: "java-1.8.0-openjdk.x86_64"
+        state: present
+
+    - name: Download and unpack NiFi binary distribution
+      unarchive:
+        src: https://www-eu.apache.org/dist/nifi/{{ tarball_version }}/nifi-{{ tarball_version }}-bin.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+        creates: /usr/local/bin/nifi-{{ tarball_version }}/LICENSE
+
+    # [[ Install NiFi ]]
+    - name: Install nifi service
+      shell: "/usr/local/bin/nifi-{{ tarball_version }}/bin/nifi.sh install"
+      args: 
+        executable: /bin/bash
+
+    # [[ CONFIGURE NiFi]]
+    - name: Write VM hostname to nifi configuration, to avoid issues with remote HTTP connections between nifi nodes.  
+      lineinfile: 
+        path: "/usr/local/bin/nifi-{{ tarball_version }}/conf/nifi.properties"
+        regexp: '^(.*)nifi.remote.input.host=(.*)$' 
+        line: 'nifi.remote.input.host={{ansible_nodename.split(".")[0] | lower }}'
+        backrefs: yes
+
+    # [[ START NiFi ]]
+    - name: Start nifi service
+      service:
+        name: nifi
+        enabled: yes
+        state: started
+
+    # [[ UPLOAD, DEPLOY, INITIATE template ]]
+    - name: Copy template file to remote system (shell command requires file to be in remote system)
+      copy:
+        src: "{{ template_file }}"
+        dest: template.xml
+    - name: Wait for port 8080 to become open on the host, don't start checking for 4 seconds
+      wait_for:
+        port: 8080
+        delay: 4
+    - name: upload template file to NiFi template repository
+      shell: 'curl  -X "POST" "http://localhost:8080/nifi-api/process-groups/root/templates/upload" \
+                 -H "Content-Type: multipart/form-data; charset=utf-8; boundary=__X_PAW_BOUNDARY__" \
+                 -k \
+                 --form template=@template.xml'
+      register: response 
+    - name: Get list of available NiFi resources for fetching the id of the template by its name
+      uri:
+        url: http://localhost:8080/nifi-api/resources
+        method: Get
+      register: nifi_resources 
+    - name: Initiate the template 
+      vars:
+        template_id: "{{ nifi_resources.json  | to_json | from_json | json_query(query) | first}}"
+      uri:
+        url: http://localhost:8080/nifi-api/process-groups/root/template-instance
+        method: POST
+        body:
+          "originX": 2.0
+          "originY": 3.0 
+          "templateId": "{{template_id.split('/')[2]}}"
+        status_code: 201
+        body_format: json
+      register: pipeline_info
+

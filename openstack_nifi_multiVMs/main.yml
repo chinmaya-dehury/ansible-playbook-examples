@@ -1,0 +1,4 @@
+---
+- import_playbook: installNifiCentos.yml ip_add=172.17.67.3 vm_name=jnu5_docker_chinmaya_centos1 template_name=vm_one_rcv_snd_data 
+- import_playbook: installNifiCentos.yml ip_add=172.17.66.165 vm_name=jnu5_docker_chinmaya_centos2 template_name=vm_two_rcv_data
+

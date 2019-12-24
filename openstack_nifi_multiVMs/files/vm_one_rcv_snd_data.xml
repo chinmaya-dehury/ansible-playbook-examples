@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<template encoding-version="1.3">
+    <description>This is in VM one. This receive the data from Raspberry Pi and forward the data to VM two.</description>
+    <groupId>1a0042c4-016f-1000-ebbb-c32b067fecd0</groupId>
+    <name>vm_one_rcv_snd_data</name>
+    <snippet>
+        <connections>
+            <id>e18a3831-d3c8-3d6b-0000-000000000000</id>
+            <parentGroupId>d01ae19e-01f7-3f73-0000-000000000000</parentGroupId>
+            <backPressureDataSizeThreshold>1 GB</backPressureDataSizeThreshold>
+            <backPressureObjectThreshold>10000</backPressureObjectThreshold>
+            <destination>
+                <groupId>7dca4190-058f-3fa5-0000-000000000000</groupId>
+                <id>038d15cf-8f67-3305-b684-6f4bac56a604</id>
+                <type>REMOTE_INPUT_PORT</type>
+            </destination>
+            <flowFileExpiration>0 sec</flowFileExpiration>
+            <labelIndex>1</labelIndex>
+            <loadBalanceCompression>DO_NOT_COMPRESS</loadBalanceCompression>
+            <loadBalancePartitionAttribute></loadBalancePartitionAttribute>
+            <loadBalanceStatus>LOAD_BALANCE_NOT_CONFIGURED</loadBalanceStatus>
+            <loadBalanceStrategy>DO_NOT_LOAD_BALANCE</loadBalanceStrategy>
+            <name></name>
+            <source>
+                <groupId>d01ae19e-01f7-3f73-0000-000000000000</groupId>
+                <id>8a75748f-10eb-3798-0000-000000000000</id>
+                <type>INPUT_PORT</type>
+            </source>
+            <zIndex>0</zIndex>
+        </connections>
+        <inputPorts>
+            <id>8a75748f-10eb-3798-0000-000000000000</id>
+            <parentGroupId>d01ae19e-01f7-3f73-0000-000000000000</parentGroupId>
+            <position>
+                <x>72.0</x>
+                <y>0.0</y>
+            </position>
+            <allowRemoteAccess>true</allowRemoteAccess>
+            <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
+            <name>rcvData_vm_one</name>
+            <state>STOPPED</state>
+            <transmitting>false</transmitting>
+            <type>INPUT_PORT</type>
+        </inputPorts>
+        <remoteProcessGroups>
+            <id>7dca4190-058f-3fa5-0000-000000000000</id>
+            <parentGroupId>d01ae19e-01f7-3f73-0000-000000000000</parentGroupId>
+            <position>
+                <x>0.0</x>
+                <y>336.0</y>
+            </position>
+            <comments></comments>
+            <communicationsTimeout>30 sec</communicationsTimeout>
+            <contents>
+                <inputPorts>
+                    <batchSettings/>
+                    <comments></comments>
+                    <concurrentlySchedulableTaskCount>1</concurrentlySchedulableTaskCount>
+                    <connected>true</connected>
+                    <exists>true</exists>
+                    <groupId>1a1335ff-016f-1000-7546-6fb24cd08973</groupId>
+                    <id>038d15cf-8f67-3305-b684-6f4bac56a604</id>
+                    <name>frm_vm_one</name>
+                    <targetId>1a123a92-016f-1000-3e7e-607b99d795d5</targetId>
+                    <targetRunning>false</targetRunning>
+                    <transmitting>false</transmitting>
+                    <useCompression>false</useCompression>
+                </inputPorts>
+            </contents>
+            <proxyHost></proxyHost>
+            <proxyUser></proxyUser>
+            <targetUri>http://172.17.66.165:8080/nifi/</targetUri>
+            <targetUris>http://172.17.66.165:8080/nifi/</targetUris>
+            <transportProtocol>HTTP</transportProtocol>
+            <yieldDuration>10 sec</yieldDuration>
+        </remoteProcessGroups>
+    </snippet>
+    <timestamp>12/19/2019 15:45:55 UTC</timestamp>
+</template>

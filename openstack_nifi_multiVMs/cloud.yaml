@@ -1,0 +1,13 @@
+# You can get these information from your openstack environment provider.
+
+clouds:
+  test:
+    auth:
+      auth_url: https://xx.xx.xx.xx:5000/v3
+      project_name: RegionOne
+      username: dehury
+      password: Chinu6aug
+      user_domain_name: hpc.ut.ee
+      project_id: 8fba445a3a6c4495a5b0d8b22ab6e570
+    region_name: RegionOne
+    identity_api_version: 3
